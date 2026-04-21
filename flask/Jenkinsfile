@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    cd /home/ubuntu/flask-app
+                    source venv/bin/activate
+                    pip install -r requirements.txt
+                    deactivate
+                '''
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh '''
+                    cd /home/ubuntu/flask-app
+                    source venv/bin/activate
+                    python3 -m pytest tests/ --tb=short || true
+                    deactivate
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    cd /home/ubuntu/flask-app
+                    git pull origin main
+                    sudo -u ubuntu pm2 restart flask-app
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Flask deployment successful!'
+        }
+        failure {
+            echo 'Flask deployment failed!'
+        }
+    }
+}

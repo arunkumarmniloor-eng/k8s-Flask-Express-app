@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'NodeJS18'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    cd /home/ubuntu/express-app
+                    npm install
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    cd /home/ubuntu/express-app
+                    git pull origin main
+                    sudo -u ubuntu pm2 restart express-app
+                '''
+            }
+        }
+    }
+
+    post {
+        success { echo 'Express deployed!' }
+        failure { echo 'Express deploy failed!' }
+    }
+}
