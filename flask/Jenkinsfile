@@ -5,14 +5,14 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
+                    url: 'https://github.com'
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    # Create venv if it doesn't exist, then use '.' instead of 'source'
+                    cd flask
                     python3 -m venv venv
                     . venv/bin/activate
                     pip install -r requirements.txt
@@ -23,7 +23,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    # Run tests inside the workspace using the local venv
+                    cd flask
                     . venv/bin/activate
                     python3 -m pytest tests/ --tb=short || true
                 '''
@@ -33,8 +33,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    # Instead of cd-ing to /home/ubuntu, stay in the workspace 
-                    # Use pm2 to start the app from the current location
+                    cd flask
+                    # Start or restart using pm2
                     sudo pm2 restart flask-app || sudo pm2 start app.py --name flask-app
                 '''
             }
