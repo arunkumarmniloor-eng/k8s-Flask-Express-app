@@ -1,13 +1,13 @@
 pipeline {
     agent any
 
-   stage('Checkout') {
-    steps {
-        git branch: 'main',
-            url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
-    }
-}
-
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
+            }
+        }
 
         stage('Install Dependencies') {
             steps {
@@ -34,7 +34,6 @@ pipeline {
             steps {
                 sh '''
                     cd flask
-                    # Start or restart using pm2
                     sudo pm2 restart flask-app || sudo pm2 start app.py --name flask-app
                 '''
             }
