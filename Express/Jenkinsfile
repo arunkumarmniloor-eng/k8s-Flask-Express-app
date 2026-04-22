@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS18'
+        nodejs 'NodeJS18' // Matches the tool name in your log
     }
 
     stages {
@@ -16,7 +16,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    cd /home/ubuntu/express-app
+                    # Go into the Express subfolder
+                    cd Express
                     npm install
                 '''
             }
@@ -25,16 +26,20 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    cd /home/ubuntu/express-app
-                    git pull origin main
-                    sudo -u ubuntu pm2 restart express-app
+                    cd Express
+                    # Restart using pm2 (ensures sudo is set up for jenkins user)
+                    sudo pm2 restart express-app || sudo pm2 start index.js --name express-app
                 '''
             }
         }
     }
 
     post {
-        success { echo 'Express deployed!' }
-        failure { echo 'Express deploy failed!' }
+        success {
+            echo 'Express deployment successful!'
+        }
+        failure {
+            echo 'Express deploy failed!'
+        }
     }
 }
