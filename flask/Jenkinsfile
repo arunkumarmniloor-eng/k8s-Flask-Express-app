@@ -36,16 +36,16 @@
             }
         }
 
-        stage('Deploy') {
+                stage('Deploy') {
             steps {
                 sh '''
                     cd flask
-                    # Restarts the app if it's already running, or starts it if it's new
-                    # Note: This requires 'sudo' permissions for the jenkins user
-                    sudo pm2 restart flask-app || sudo pm2 start app.py --name flask-app
+                    # Tell PM2 to use the python interpreter from the venv
+                    sudo pm2 restart flask-app || sudo pm2 start app.py --name flask-app --interpreter ./venv/bin/python3
                 '''
             }
         }
+
     }
 
     post {  
