@@ -8,7 +8,7 @@
                 git branch: 'main',
                     url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
         }
-
+        }
         stage('Install Dependencies') {
             steps {
                 sh '''
@@ -45,7 +45,7 @@
         }
     }
 
-    post {
+    post {  
         success {
             echo 'Flask deployment successful!'
         }
@@ -54,4 +54,10 @@
         }
     }
 }
-   
+
+
+
+
+
+
+  
