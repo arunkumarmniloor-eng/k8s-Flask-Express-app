@@ -1,21 +1,24 @@
-pipeline {
+ pipeline {
     agent any
 
     stages {
         stage('Checkout') {
             steps {
+                // Downloads your code from the specific repository
                 git branch: 'main',
                     url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
-            }
         }
 
         stage('Install Dependencies') {
             steps {
                 sh '''
                     cd flask
+                    # Ensure virtual environment exists
                     python3 -m venv venv
-                    . venv/bin/activate
-                    pip install -r requirements.txt
+                    
+                    # Use the pip inside the venv directly to avoid OS restrictions
+                    ./venv/bin/pip install --upgrade pip
+                    ./venv/bin/pip install -r requirements.txt
                 '''
             }
         }
@@ -24,8 +27,8 @@ pipeline {
             steps {
                 sh '''
                     cd flask
-                    . venv/bin/activate
-                    python3 -m pytest tests/ --tb=short || true
+                    # Use the python executable inside the venv to run tests
+                    ./venv/bin/python3 -m pytest tests/ --tb=short || true
                 '''
             }
         }
@@ -34,6 +37,8 @@ pipeline {
             steps {
                 sh '''
                     cd flask
+                    # Restarts the app if it's already running, or starts it if it's new
+                    # Note: This requires 'sudo' permissions for the jenkins user
                     sudo pm2 restart flask-app || sudo pm2 start app.py --name flask-app
                 '''
             }
@@ -49,3 +54,4 @@ pipeline {
         }
     }
 }
+   
