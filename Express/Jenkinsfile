@@ -23,12 +23,12 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+                stage('Deploy') {
             steps {
                 sh '''
                     cd Express
-                    # Restart using pm2 (ensures sudo is set up for jenkins user)
-                    sudo pm2 restart express-app || sudo pm2 start index.js --name express-app
+                    # Use app.js instead of index.js
+                    sudo pm2 restart express-app || sudo pm2 start app.js --name express-app
                 '''
             }
         }
