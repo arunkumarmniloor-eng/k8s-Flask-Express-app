@@ -12,9 +12,10 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    source venv/bin/activate
+                    # Create venv if it doesn't exist, then use '.' instead of 'source'
+                    python3 -m venv venv
+                    . venv/bin/activate
                     pip install -r requirements.txt
-                    deactivate
                 '''
             }
         }
@@ -22,10 +23,9 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    cd /home/ubuntu/flask-app
-                    source venv/bin/activate
+                    # Run tests inside the workspace using the local venv
+                    . venv/bin/activate
                     python3 -m pytest tests/ --tb=short || true
-                    deactivate
                 '''
             }
         }
@@ -33,9 +33,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    cd /home/ubuntu/flask-app
-                    git pull origin main
-                    sudo -u ubuntu pm2 restart flask-app
+                    # Instead of cd-ing to /home/ubuntu, stay in the workspace 
+                    # Use pm2 to start the app from the current location
+                    sudo pm2 restart flask-app || sudo pm2 start app.py --name flask-app
                 '''
             }
         }
