@@ -9,19 +9,21 @@
                     url: 'https://github.com/arunkumarmniloor-eng/k8s-Flask-Express-app.git'
         }
         }
-        stage('Install Dependencies') {
+               stage('Install Dependencies') {
             steps {
                 sh '''
                     cd flask
-                    # Ensure virtual environment exists
                     python3 -m venv venv
                     
-                    # Use the pip inside the venv directly to avoid OS restrictions
+                    # Grant execution permissions to the venv bin folder
+                    chmod -R +x venv/bin/
+                    
                     ./venv/bin/pip install --upgrade pip
                     ./venv/bin/pip install -r requirements.txt
                 '''
             }
         }
+
 
         stage('Test') {
             steps {
